@@ -2,6 +2,32 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+const location = window.location
+
+let protocol = 'ws://'
+if (location.protocol === 'https:') {
+  protocol = 'wss://'
+}
+
+const endpoint = protocol + location.hostname + ':8000/api/messages/private/'
+const socket = new WebSocket(endpoint)
+
+socket.onmessage = event => {
+  console.log('messages', JSON.parse(event.data))
+}
+
+socket.onopen = event => {
+  console.log('open', event)
+}
+
+socket.onerror = event => {
+  console.log('error', event)
+}
+
+socket.onclose = event => {
+  console.log('close', event)
+}
+
 function App() {
   return (
     <div className="App">
