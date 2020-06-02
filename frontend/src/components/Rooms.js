@@ -1,8 +1,10 @@
 import React from 'react';
 import { List, Spin, Tooltip, PageHeader, Button } from 'antd';
+import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 import { PlusOutlined, LogoutOutlined } from '@ant-design/icons';
 import NewRoomModal from './NewRoomModal';
+import { onUserLogout } from '../actions';
 
 const windowPadding = 189;
 
@@ -48,7 +50,7 @@ class Rooms extends React.Component {
               <Button type="link" onClick={this.onNewRoomToggle} icon={<PlusOutlined />} />
             </Tooltip>,
             <Tooltip title="Log Out">
-              <Button type="link" icon={<LogoutOutlined />} />
+              <Button type="link" onClick={this.props.onUserLogout} icon={<LogoutOutlined />} />
             </Tooltip>,
           ]}
         />
@@ -91,4 +93,4 @@ class Rooms extends React.Component {
   }
 }
 
-export default Rooms;
+export default connect(null, { onUserLogout })(Rooms);

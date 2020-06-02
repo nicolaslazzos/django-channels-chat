@@ -18,14 +18,14 @@ class ChatConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
         print('connected', event)
 
-        room_name = self.scope['url_route']['kwargs']['room']
-        chat_room = await self.get_chat_room(room_name)
+        # room_name = self.scope['url_route']['kwargs']['room']
+        # chat_room = await self.get_chat_room(room_name)
 
-        if not chat_room.exists():
-            return await self.send({ 'type': 'websocket.disconnect', 'text': 'invalid chat room name' })
+        # if not chat_room.exists():
+        #     return await self.send({ 'type': 'websocket.disconnect', 'text': 'invalid chat room name' })
             
-        self.chat_room = chat_room.id
-        await self.channel_layer.group_add(chat_room.id, self.channel_name)
+        # self.chat_room = chat_room.id
+        # await self.channel_layer.group_add(chat_room.id, self.channel_name)
 
         await self.send({ 'type': 'websocket.accept' })
 

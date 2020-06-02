@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Empty } from 'antd';
+import { Provider } from 'react-redux';
 import './App.css';
-import Rooms from './components/Rooms';
-import Chat from './components/Chat';
-import MessageInput from './components/MessageInput';
-import EmptyScreen from './components/EmptyScreen';
-import Login from './components/Login';
-
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-  useHistory,
-} from "react-router-dom";
+import store from './reducers';
+import Router from './components/Router';
 
 const location = window.location
 
@@ -42,54 +30,18 @@ socket.onclose = event => {
   console.log('close', event)
 }
 
-function App() {
-  const [height, setHeight] = useState(window.innerHeight);
-  const [room, setRoom] = useState(false);
-  let history = useHistory();
+const App = () => {
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-  const updateWindowDimensions = () => {
-    setHeight(window.innerHeight)
-  }
+  useEffect(() => window.addEventListener('resize', updateWindowDimensions), []);
 
-  const onRoomSelectToggle = () => setRoom(!room);
-
-  window.addEventListener('resize', updateWindowDimensions);
+  const updateWindowDimensions = () => setWindowHeight(window.innerHeight);
 
   return (
-    <div className="App" style={{ height }}>
-
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path="/"
-          // render={() => false ? <Redirect to="/rooms" /> : <Redirect to="/login" />}
-          />
-          <Route
-            exact
-            path="/rooms"
-            render={() => true ? (
-              <Row>
-                <Col span={6}>
-                  <Rooms windowHeight={height} onRoomPress={onRoomSelectToggle} />
-                </Col>
-                <Col span={18} style={{ paddingLeft: 15 }}>
-                  {room ? (
-                    <div>
-                      <Chat windowHeight={height} onClose={onRoomSelectToggle} />
-                      <MessageInput />
-                    </div>
-                  ) : <EmptyScreen />}
-                </Col>
-              </Row>) : (
-                <Redirect to="/login" />
-              )}
-          />
-          <Route path="/login">
-            <Login />
-          </Route>
-        </Switch>
-      </Router>
+    <div className="App" style={{ height: windowHeight }}>
+      <Provider store={store}>
+        <Router windowHeight={windowHeight} />
+      </Provider>
     </div>
   );
 }
