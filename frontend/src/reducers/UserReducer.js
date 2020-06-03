@@ -8,6 +8,7 @@ import {
 const INITIAL_STATE = {
   username: '',
   password: '',
+  confirmPassword: '',
   loggedIn: localStorage.getItem('token') ? true : false,
   loading: false,
   error: '',
@@ -20,9 +21,9 @@ export default (state = INITIAL_STATE, action) => {
     case ON_USER_AUTH:
       return { ...state, loading: true, error: '' };
     case ON_USER_AUTH_SUCCESS:
-      return { ...state, ...action.payload, loading: false };
+      return { ...state, ...action.payload, loading: false, loggedIn: true, password: '', confirmPassword: '' };
     case ON_USER_AUTH_FAIL:
-      return { ...state, loading: false, ...action.payload };
+      return { ...state, loading: false };
     default:
       return state;
   }

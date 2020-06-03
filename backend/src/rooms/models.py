@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 class Room(models.Model):
     id = models.CharField(max_length=100, primary_key=True, unique=True)
-    name = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
     password = models.CharField(max_length=128)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, editable=False, blank=True)

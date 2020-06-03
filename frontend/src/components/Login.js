@@ -16,14 +16,13 @@ const tabsList = [
 ];
 
 class Login extends React.Component {
-  state = { selectedTab: 'login', confirmPassword: '' };
+  state = { selectedTab: 'login' };
 
   onLoginClick = () => this.props.onUserLogin({ username: this.props.username, password: this.props.password });
 
   onSignupClick = () => {
     if (this.props.password === this.state.confirmPassword) {
       this.props.onUserCreate({ username: this.props.username, password: this.props.password });
-      this.setState({ confirmPassword: '' });
     }
   }
 
@@ -69,13 +68,13 @@ class Login extends React.Component {
           value={this.props.password}
           onChange={event => this.props.onUserValueChange({ password: event.target.value })}
           prefix={<KeyOutlined />}
-        />
+          />
         <br />
         <br />
         <Input.Password
           placeholder="confirm password"
-          value={this.state.confirmPassword}
-          onChange={event => this.setState({ confirmPassword: event.target.value })}
+          value={this.props.confirmPassword}
+          onChange={event => this.props.onUserValueChange({ confirmPassword: event.target.value })}
           prefix={<KeyOutlined />}
         />
         <br />
@@ -109,8 +108,8 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = state => {
-  const { username, password, loading } = state.user;
-  return { username, password, loading };
+  const { username, password, confirmPassword, loading } = state.user;
+  return { username, password, confirmPassword, loading };
 }
 
 export default connect(mapStateToProps, { onUserLogin, onUserValueChange, onUserCreate })(Login);

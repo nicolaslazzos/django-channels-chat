@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Spin, Comment, Tooltip, PageHeader } from 'antd';
+import { List, Spin, Comment, Tooltip } from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 
@@ -41,13 +41,6 @@ class Chat extends React.Component {
 
   render() {
     return (
-      <div>
-        <PageHeader
-          className="chat-header"
-          onBack={this.props.onClose}
-          title="Private Chat Room"
-          subTitle="@private"
-        />
         <div className='infinite-container chat-infinite-container' style={{ height: this.props.windowHeight - windowPadding }}>
           <InfiniteScroll
             initialLoad={false}
@@ -81,7 +74,6 @@ class Chat extends React.Component {
             </List>
           </InfiniteScroll>
         </div>
-      </div >
     );
   }
 }

@@ -1,6 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Modal, Button, Tooltip, Input, Card } from 'antd';
 import { UserOutlined, KeyOutlined, HomeOutlined } from '@ant-design/icons';
+import { onRoomCreate, onRoomsValueChange } from '../actions';
 
 const tabsList = [
   {
@@ -14,47 +16,91 @@ const tabsList = [
 ];
 
 class NewRoomModal extends React.Component {
-  state = {
-    selectedTab: 'join',
-    tabsContent: {
-      join: (
-        <div>
-          <Input placeholder="room name" prefix={<UserOutlined />} />
-          <br />
-          <br />
-          <Input.Password placeholder="password" prefix={<KeyOutlined />} />
-          <br />
-          <br />
-          <Tooltip title='Join Room'>
-            <Button type="primary">Join Room</Button>
-          </Tooltip>
-        </div>
-      ),
-      create: (
-        <div>
-          <Input placeholder="room name" prefix={<UserOutlined />} />
-          <br />
-          <br />
-          <Input placeholder="room label" prefix={<HomeOutlined />} />
-          <br />
-          <br />
-          <Input.Password placeholder="password" prefix={<KeyOutlined />} />
-          <br />
-          <br />
-          <Input.Password placeholder="confirm password" prefix={<KeyOutlined />} />
-          <br />
-          <br />
-          <Tooltip title='Create Room'>
-            <Button type="primary">Create Room</Button>
-          </Tooltip>
-        </div>
-      ),
+  state = { selectedTab: 'join' };
+
+  joinRoomFormRender = () => {
+    return (
+      <div>
+        <Input
+          placeholder="room name"
+          value={this.props.id}
+          onChange={event => this.props.onRoomsValueChange({ id: event.target.value })}
+          prefix={<UserOutlined />}
+          />
+        <br />
+        <br />
+        <Input.Password
+          placeholder="password"
+          value={this.props.password}
+          onChange={event => this.props.onRoomsValueChange({ password: event.target.value })}
+          prefix={<KeyOutlined />}
+          />
+        <br />
+        <br />
+        <Tooltip title='Join Room'>
+          <Button type="primary">Join Room</Button>
+        </Tooltip>
+      </div>
+    );
+  }
+  
+  newRoomFormRender = () => {
+    return (
+      <div>
+        <Input
+          placeholder="room name"
+          value={this.props.id}
+          onChange={event => this.props.onRoomsValueChange({ id: event.target.value })}
+          prefix={<UserOutlined />}
+          />
+        <br />
+        <br />
+        <Input
+          placeholder="room label"
+          value={this.props.label}
+          onChange={event => this.props.onRoomsValueChange({ label: event.target.value })}
+          prefix={<HomeOutlined />}
+          />
+        <br />
+        <br />
+        <Input.Password
+          placeholder="password"
+          value={this.props.password}
+          onChange={event => this.props.onRoomsValueChange({ password: event.target.value })}
+          prefix={<KeyOutlined />}
+          />
+        <br />
+        <br />
+        <Input.Password
+          placeholder="confirm password"
+          value={this.props.confirmPassword}
+          onChange={event => this.props.onRoomsValueChange({ confirmPassword: event.target.value })}
+          prefix={<KeyOutlined />}
+        />
+        <br />
+        <br />
+        <Tooltip title='Create Room'>
+          <Button type="primary"  onClick={this.onCreateRoomClick} loading={this.props.loading}>Create Room</Button>
+        </Tooltip>
+      </div>
+    );
+  }
+
+  onCreateRoomClick = () => {
+    if (this.props.password === this.props.confirmPassword) {
+      this.props.onRoomCreate({ 
+        id: this.props.id,
+        label: this.props.label,
+        password: this.props.password,
+       })
     }
-  };
+  }
 
   onTabChange = key => this.setState({ selectedTab: key });
 
   render() {
+    const tabsContent = { join: this.joinRoomFormRender, create: this.newRoomFormRender };
+
     return (
       <div>
         <Modal
@@ -70,7 +116,7 @@ class NewRoomModal extends React.Component {
             activeTabKey={this.state.selectedTab}
             onTabChange={this.onTabChange}
           >
-            {this.state.tabsContent[this.state.selectedTab]}
+            {tabsContent[this.state.selectedTab]()}
           </Card>
         </Modal>
       </div>
@@ -78,4 +124,9 @@ class NewRoomModal extends React.Component {
   }
 }
 
-export default NewRoomModal;
+const mapStateToProps = state => {
+  const { id, label, password, confirmPassword, loading } = state.rooms;
+  return { id, label, password, confirmPassword, loading };
+}
+
+export default connect(mapStateToProps, { onRoomCreate, onRoomsValueChange })(NewRoomModal);
