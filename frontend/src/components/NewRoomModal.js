@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Modal, Button, Tooltip, Input, Card } from 'antd';
 import { UserOutlined, KeyOutlined, HomeOutlined } from '@ant-design/icons';
-import { onRoomCreate, onRoomsValueChange } from '../actions';
+import { onRoomCreate, onRoomsValueChange, onRoomJoin } from '../actions';
 
 const tabsList = [
   {
@@ -26,7 +26,7 @@ class NewRoomModal extends React.Component {
           value={this.props.id}
           onChange={event => this.props.onRoomsValueChange({ id: event.target.value })}
           prefix={<UserOutlined />}
-          />
+        />
         <br />
         <br />
         <Input.Password
@@ -34,16 +34,20 @@ class NewRoomModal extends React.Component {
           value={this.props.password}
           onChange={event => this.props.onRoomsValueChange({ password: event.target.value })}
           prefix={<KeyOutlined />}
-          />
+        />
         <br />
         <br />
         <Tooltip title='Join Room'>
-          <Button type="primary">Join Room</Button>
+          <Button type="primary" onClick={this.onJoinRoomClick}>Join Room</Button>
         </Tooltip>
       </div>
     );
   }
-  
+
+  onJoinRoomClick = () => {
+    if (this.props.password) this.props.onRoomJoin({ room: this.props.id, user: this.props.username, password: this.props.password });
+  }
+
   newRoomFormRender = () => {
     return (
       <div>
@@ -52,7 +56,7 @@ class NewRoomModal extends React.Component {
           value={this.props.id}
           onChange={event => this.props.onRoomsValueChange({ id: event.target.value })}
           prefix={<UserOutlined />}
-          />
+        />
         <br />
         <br />
         <Input
@@ -60,7 +64,7 @@ class NewRoomModal extends React.Component {
           value={this.props.label}
           onChange={event => this.props.onRoomsValueChange({ label: event.target.value })}
           prefix={<HomeOutlined />}
-          />
+        />
         <br />
         <br />
         <Input.Password
@@ -68,7 +72,7 @@ class NewRoomModal extends React.Component {
           value={this.props.password}
           onChange={event => this.props.onRoomsValueChange({ password: event.target.value })}
           prefix={<KeyOutlined />}
-          />
+        />
         <br />
         <br />
         <Input.Password
@@ -80,7 +84,7 @@ class NewRoomModal extends React.Component {
         <br />
         <br />
         <Tooltip title='Create Room'>
-          <Button type="primary"  onClick={this.onCreateRoomClick} loading={this.props.loading}>Create Room</Button>
+          <Button type="primary" onClick={this.onCreateRoomClick} loading={this.props.loading}>Create Room</Button>
         </Tooltip>
       </div>
     );
@@ -88,11 +92,11 @@ class NewRoomModal extends React.Component {
 
   onCreateRoomClick = () => {
     if (this.props.password === this.props.confirmPassword) {
-      this.props.onRoomCreate({ 
+      this.props.onRoomCreate({
         id: this.props.id,
         label: this.props.label,
         password: this.props.password,
-       })
+      })
     }
   }
 
@@ -125,8 +129,9 @@ class NewRoomModal extends React.Component {
 }
 
 const mapStateToProps = state => {
+  const { username } = state.user;
   const { id, label, password, confirmPassword, loading } = state.rooms;
-  return { id, label, password, confirmPassword, loading };
+  return { id, label, password, confirmPassword, loading, username };
 }
 
-export default connect(mapStateToProps, { onRoomCreate, onRoomsValueChange })(NewRoomModal);
+export default connect(mapStateToProps, { onRoomCreate, onRoomsValueChange, onRoomJoin })(NewRoomModal);

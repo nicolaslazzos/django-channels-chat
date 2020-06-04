@@ -39,3 +39,19 @@ export const onRoomCreate = ({ id, label, password }) => dispatch => {
     .then(data => dispatch({ type: ON_ROOM_CREATED, payload: { room: data } }))
     .catch(error => dispatch({ type: ON_ROOM_CREATE_FAIL }));
 }
+
+export const onRoomJoin = ({ room, user, password }) => dispatch => {
+  dispatch({ type: ON_ROOM_CREATING });
+
+  fetch(`${BACKEND_HOST}/api/rooms/join/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `JWT ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({ room, user, password }),
+  })
+    .then(response => response.json())
+    .then(data => dispatch({ type: ON_ROOM_CREATED, payload: { room: data } }))
+    .catch(error => dispatch({ type: ON_ROOM_CREATE_FAIL }));
+}

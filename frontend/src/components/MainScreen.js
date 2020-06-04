@@ -8,16 +8,19 @@ import EmptyScreen from './EmptyScreen';
 import { onRoomMessagesRead, onMessagesValueChange } from '../actions';
 
 const MainScreen = props => {
-  const [room, setRoom] = useState(false);
-
-  let roomSocket = null;
+  const [room, setRoom] = useState(null);
+  const [roomSocket, setRoomSocket] = useState(null);
 
   const onRoomSelect = room => {
     props.onMessagesValueChange({ messages: [] });
     setRoom(room);
 
     roomSocket && roomSocket.close();
-    roomSocket = props.onRoomMessagesRead(room.id);
+    setRoomSocket(props.onRoomMessagesRead(room.id));
+  }
+
+  const onMessageSend = message => {
+    if (roomSocket) roomSocket.send(JSON.stringify({ command:'new_message', data: { text: message, author: props.username } }));
   }
 
   return (
@@ -35,7 +38,7 @@ const MainScreen = props => {
               subTitle={`@${room.id}`}
             />
             <Chat windowHeight={props.windowHeight} />
-            <MessageInput />
+            <MessageInput onMessageSend={onMessageSend} />
           </div>
         ) : <EmptyScreen />}
       </Col>

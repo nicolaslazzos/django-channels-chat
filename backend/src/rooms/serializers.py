@@ -12,7 +12,7 @@ class RoomSerializer(serializers.ModelSerializer):
         if password is not None:
             instance.password = password
 
-        user =  self.context['request'].user
+        user = self.context['request'].user
         instance.owner = user
 
         instance.save()
