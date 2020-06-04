@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { Row, Col, PageHeader } from 'antd';
+import { connect } from 'react-redux';
 import Rooms from './Rooms';
 import Chat from './Chat';
 import MessageInput from './MessageInput';
 import EmptyScreen from './EmptyScreen';
+import { onRoomMessagesRead, onMessagesValueChange } from '../actions';
 
 const MainScreen = props => {
   const [room, setRoom] = useState(false);
 
-  const onRoomSelect = room => setRoom(room);
+  let roomSocket = null;
+
+  const onRoomSelect = room => {
+    props.onMessagesValueChange({ messages: [] });
+    setRoom(room);
+
+    roomSocket && roomSocket.close();
+    roomSocket = props.onRoomMessagesRead(room.id);
+  }
 
   return (
     <Row>
@@ -33,4 +43,9 @@ const MainScreen = props => {
   )
 }
 
-export default MainScreen;
+const mapStateToProps = state => {
+  const { username } = state.user;
+  return { username };
+}
+
+export default connect(mapStateToProps, { onRoomMessagesRead, onMessagesValueChange })(MainScreen);

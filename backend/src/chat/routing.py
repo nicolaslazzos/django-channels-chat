@@ -11,7 +11,7 @@ application = ProtocolTypeRouter({
     'websocket': AllowedHostsOriginValidator(
         AuthMiddlewareStack(
             URLRouter([
-                url(r"^api/messages/(?P<room>[\w.@+-]+)", ChatConsumer)
+                url(r"^rooms/(?P<room_id>[\w.@+-]+)", ChatConsumer)
             ])
         )
     )
