@@ -10,7 +10,7 @@ class RoomSerializer(serializers.ModelSerializer):
         instance = self.Meta.model(**validated_data)
 
         if password is not None:
-            instance.password = password
+            instance.set_password(password)
 
         user = self.context['request'].user
         instance.owner = user

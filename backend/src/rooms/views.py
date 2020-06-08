@@ -43,7 +43,7 @@ class RoomUserCreateAPIView(generics.CreateAPIView):
 
         serializer = self.serializer_class(data={ 'room': room.id, 'user': user.id })
 
-        if room.password == password and serializer.is_valid():
+        if serializer.is_valid() and room.check_password(password):
             serializer.save()
             room_serializer = RoomSerializer(room)
 
