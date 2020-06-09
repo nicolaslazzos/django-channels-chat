@@ -13,7 +13,7 @@ export const onUserRead = () => dispatch => {
   })
     .then(res => {
       if (res.status === 401) throw new Error(res.status);
-      res.json()
+      return res.json()
     })
     .then(json => dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { username: json.username } }))
     .catch(error => onUserLogout()(dispatch));

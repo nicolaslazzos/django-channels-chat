@@ -4,30 +4,34 @@ import { connect } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroller';
 import { PlusOutlined, LogoutOutlined } from '@ant-design/icons';
 import NewRoomModal from './NewRoomModal';
-import { onUserLogout, onRoomsRead } from '../actions';
+import { onUserLogout, onRoomsRead, onRoomsValueChange, onRoomDelete, onRoomLeave } from '../actions';
 
 const windowPadding = 189;
 
 class Rooms extends React.Component {
-  state = {
-    loading: false,
-    hasMore: true,
-    newRoomVisible: false,
-  };
+  state = { loading: false, hasMore: true, };
 
   componentDidMount() {
     this.props.onRoomsRead();
   }
 
-  onNewRoomToggle = () => this.setState({ newRoomVisible: !this.state.newRoomVisible })
+  onNewRoomToggle = () => this.props.onRoomsValueChange({ newRoomVisible: !this.props.newRoomVisible });
 
   handleInfiniteOnLoad = () => {
-    let { data } = this.state;
+    let { rooms } = this.props;
 
-    this.setState({ loading: true, });
+    this.setState({ loading: true });
 
-    if (data.length > 9) this.setState({ hasMore: false, loading: false });
+    if (rooms.length > 9) this.setState({ hasMore: false, loading: false });
   };
+
+  renderLeaveButton = id => {
+    return <a key="room-leave" onClick={() => this.props.onRoomLeave(id)}>leave</a>;
+  }
+
+  renderDeleteButton = id => {
+    return <a key="room-delete" onClick={() => this.props.onRoomDelete(id)}>delete</a>;
+  }
 
   roomsListRender = rooms => {
     return (
@@ -36,7 +40,10 @@ class Rooms extends React.Component {
         itemLayout="horizontal"
         dataSource={rooms}
         renderItem={item => (
-          <List.Item key={item.id}>
+          <List.Item
+            key={item.id}
+            actions={[item.owner === this.props.username ? this.renderDeleteButton(item.id) : this.renderLeaveButton(item.id)]}
+          >
             <a onClick={() => this.props.onRoomPress(item)}>
               <List.Item.Meta
                 title={item.label}
@@ -79,7 +86,7 @@ class Rooms extends React.Component {
             {this.roomsListRender(this.props.rooms.filter(room => room.owner !== this.props.username))}
           </InfiniteScroll>
         </div >
-        <NewRoomModal visible={this.state.newRoomVisible} onCancel={this.onNewRoomToggle} />
+        <NewRoomModal visible={this.props.newRoomVisible} onCancel={this.onNewRoomToggle} />
       </div>
     );
   }
@@ -87,8 +94,8 @@ class Rooms extends React.Component {
 
 const mapStateToProps = state => {
   const { username } = state.user;
-  const { rooms } = state.rooms;
-  return { username, rooms };
+  const { rooms, newRoomVisible } = state.rooms;
+  return { username, rooms, newRoomVisible };
 }
 
-export default connect(mapStateToProps, { onUserLogout, onRoomsRead })(Rooms);
+export default connect(mapStateToProps, { onUserLogout, onRoomsRead, onRoomsValueChange, onRoomDelete, onRoomLeave })(Rooms);

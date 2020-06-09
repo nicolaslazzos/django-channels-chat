@@ -63,3 +63,7 @@
   align-items: center;
   justify-content: center;
 }
+
+.list-loadmore-edit {
+  color: red;
+}

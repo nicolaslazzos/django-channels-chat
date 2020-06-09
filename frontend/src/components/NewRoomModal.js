@@ -45,7 +45,7 @@ class NewRoomModal extends React.Component {
   }
 
   onJoinRoomClick = () => {
-    if (this.props.password) this.props.onRoomJoin({ room: this.props.id, user: this.props.username, password: this.props.password });
+    if (this.props.password) this.props.onRoomJoin({ room: this.props.id, password: this.props.password });
   }
 
   newRoomFormRender = () => {
