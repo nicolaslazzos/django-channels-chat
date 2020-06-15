@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Modal, Button, Tooltip, Input, Card } from 'antd';
+import { Modal, Button, Tooltip, Input, Card, Alert } from 'antd';
 import { UserOutlined, KeyOutlined, HomeOutlined } from '@ant-design/icons';
 import { onRoomCreate, onRoomsValueChange, onRoomJoin } from '../actions';
 
@@ -37,6 +37,12 @@ class NewRoomModal extends React.Component {
         />
         <br />
         <br />
+        {this.props.error && (
+          <div>
+            <Alert message={this.props.error} type="error" />
+            <br />
+          </div>
+        )}
         <Tooltip title='Join Room'>
           <Button type="primary" onClick={this.onJoinRoomClick}>Join Room</Button>
         </Tooltip>
@@ -130,8 +136,8 @@ class NewRoomModal extends React.Component {
 
 const mapStateToProps = state => {
   const { username } = state.user;
-  const { id, label, password, confirmPassword, loading } = state.rooms;
-  return { id, label, password, confirmPassword, loading, username };
+  const { id, label, password, confirmPassword, loading, error } = state.rooms;
+  return { id, label, password, confirmPassword, loading, error, username };
 }
 
 export default connect(mapStateToProps, { onRoomCreate, onRoomsValueChange, onRoomJoin })(NewRoomModal);
