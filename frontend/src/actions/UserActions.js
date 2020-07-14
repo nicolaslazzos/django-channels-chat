@@ -1,57 +1,46 @@
-import { BACKEND_HOST } from '../environment';
-import { ON_USER_VALUE_CHANGE, ON_USER_AUTH, ON_USER_AUTH_SUCCESS, ON_USER_AUTH_FAIL } from './types';
+import axios from 'axios';
+import setAuthToken from '../utils/setAuthToken';
+import { ON_USER_VALUE_CHANGE, ON_USER_AUTH, ON_USER_AUTH_SUCCESS, ON_USER_AUTH_FAIL, ON_USER_LOGOUT } from './types';
 
 export const onUserValueChange = data => ({ type: ON_USER_VALUE_CHANGE, payload: data });
 
-export const onUserRead = () => dispatch => {
+export const onUserRead = () => async dispatch => {
   dispatch({ type: ON_USER_AUTH });
 
-  fetch(`${BACKEND_HOST}/api/users/current-user/`, {
-    headers: {
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    }
-  })
-    .then(res => {
-      if (res.status === 401) throw new Error(res.status);
-      return res.json()
-    })
-    .then(json => dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { username: json.username } }))
-    .catch(error => onUserLogout()(dispatch));
+  if (localStorage.token) setAuthToken(localStorage.token);
+
+  try {
+    const res = await axios.get('/api/users/current-user/');
+    dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { username: res.data.username } });
+  } catch (error) {
+    dispatch(onUserLogout());
+  }
 }
 
-export const onUserLogin = data => dispatch => {
+export const onUserLogin = data => async dispatch => {
   dispatch({ type: ON_USER_AUTH });
 
-  fetch(`${BACKEND_HOST}/token-auth/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-    .then(res => res.json())
-    .then(json => {
-      localStorage.setItem('token', json.token);
-      dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { username: json.user.username } });
-    })
-    .catch(error => dispatch({ type: ON_USER_AUTH_FAIL }));
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    const res = await axios.post('/token-auth/', data, config);
+    dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { token: res.data.token, username: res.data.username } });
+  } catch (error) {
+    dispatch({ type: ON_USER_AUTH_FAIL });
+  }
 }
 
-export const onUserCreate = data => dispatch => {
+export const onUserCreate = data => async dispatch => {
   dispatch({ type: ON_USER_AUTH });
 
-  fetch(`${BACKEND_HOST}/api/users/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-    .then(res => res.json())
-    .then(json => {
-      localStorage.setItem('token', json.token);
-      dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { username: json.username } });
-    })
-    .catch(error => dispatch({ type: ON_USER_AUTH_FAIL }));
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    const res = await axios.post('/api/users/', data, config);
+    dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { token: res.data.token, username: res.data.username } });
+  } catch (error) {
+    dispatch({ type: ON_USER_AUTH_FAIL });
+  }
 }
 
-export const onUserLogout = () => dispatch => {
-  localStorage.removeItem('token');
-  dispatch({ type: ON_USER_VALUE_CHANGE, payload: { username: '', loggedIn: false, loading: false } });
-}
+export const onUserLogout = () => dispatch => dispatch({ type: ON_USER_LOGOUT });

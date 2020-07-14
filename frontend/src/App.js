@@ -3,11 +3,18 @@ import { Provider } from 'react-redux';
 import './App.css';
 import store from './reducers';
 import Router from './components/Router';
+import { onUserRead } from './actions';
+import setAuthToken from './utils/setAuthToken';
+
+setAuthToken();
 
 const App = () => {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
-  useEffect(() => window.addEventListener('resize', updateWindowDimensions), []);
+  useEffect(() => {
+    window.addEventListener('resize', updateWindowDimensions);
+    store.dispatch(onUserRead());
+  }, []);
 
   const updateWindowDimensions = () => setWindowHeight(window.innerHeight);
 

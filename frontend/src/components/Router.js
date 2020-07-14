@@ -6,9 +6,9 @@ import { onUserRead } from '../actions';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 const Router = props => {
-  useEffect(() => {
-    if (props.loggedIn) props.onUserRead();
-  }, []);
+  const { user: { loggedIn, loading }, onUserRead, windowHeight } = props;
+
+  useEffect(() => { loggedIn && onUserRead() }, [onUserRead, loggedIn]);
 
   return (
     <BrowserRouter>
@@ -16,16 +16,16 @@ const Router = props => {
         <Route
           exact
           path="/"
-          render={() => props.loggedIn ? <Redirect to="/rooms" /> : <Redirect to="/login" />}
+          render={() => loggedIn && !loading ? <Redirect to="/rooms" /> : <Redirect to="/login" />}
         />
         <Route
           exact
           path="/rooms"
-          render={() => props.loggedIn ? <MainScreen windowHeight={props.windowHeight} /> : <Redirect to="/login" />}
+          render={() => loggedIn && !loading ? <MainScreen windowHeight={windowHeight} /> : <Redirect to="/login" />}
         />
         <Route
           path="/login"
-          render={() => props.loggedIn ? <Redirect to="/rooms" /> : <Login />}
+          render={() => loggedIn && !loading ? <Redirect to="/rooms" /> : <Login />}
         />
       </Switch>
     </BrowserRouter>
@@ -33,8 +33,7 @@ const Router = props => {
 }
 
 const mapStateToProps = state => {
-  const { loggedIn } = state.user;
-  return { loggedIn };
+  return { user: state.user };
 }
 
 export default connect(mapStateToProps, { onUserRead })(Router);
