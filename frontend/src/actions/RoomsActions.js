@@ -1,4 +1,5 @@
 import { BACKEND_HOST } from '../environment';
+import axios from 'axios';
 import {
   ON_ROOMS_VALUE_CHANGE,
   ON_ROOM_READ,
@@ -12,87 +13,65 @@ import {
 
 export const onRoomsValueChange = data => ({ type: ON_ROOMS_VALUE_CHANGE, payload: data });
 
-export const onRoomsRead = () => dispatch => {
+export const onRoomsRead = () => async dispatch => {
   dispatch({ type: ON_ROOM_READING });
 
-  fetch(`${BACKEND_HOST}/api/rooms/`, {
-    headers: {
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    }
-  })
-    .then(response => response.json())
-    .then(data => dispatch({ type: ON_ROOM_READ, payload: { rooms: data } }))
-    .catch(error => dispatch({ type: ON_ROOM_READ_FAIL }));
+  try {
+    const res = await axios.get('/api/rooms/');
+    dispatch({ type: ON_ROOM_READ, payload: { rooms: res.data } });
+  } catch (error) {
+    dispatch({ type: ON_ROOM_READ_FAIL });
+  }
 }
 
-export const onRoomCreate = ({ id, label, password }) => dispatch => {
+export const onRoomCreate = data => async dispatch => {
+  // data = { id, label, password }
   dispatch({ type: ON_ROOM_CREATING });
 
-  fetch(`${BACKEND_HOST}/api/rooms/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify({ id, label, password }),
-  })
-    .then(response => {
-      if (response.status !== 201) throw new Error(response.status);
-      return response.json();
-    })
-    .then(data => dispatch({ type: ON_ROOM_CREATED, payload: { room: data } }))
-    .catch(error => dispatch({ type: ON_ROOM_CREATE_FAIL }));
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    const res = await axios.post('/api/rooms/', data, config);
+    dispatch({ type: ON_ROOM_CREATED, payload: { room: res.data } });
+  } catch (error) {
+    dispatch({ type: ON_ROOM_CREATE_FAIL });
+  }
 }
 
-export const onRoomJoin = ({ room, password }) => dispatch => {
+export const onRoomJoin = data => async dispatch => {
+  // data = { room, password }
   dispatch({ type: ON_ROOM_CREATING });
 
-  fetch(`${BACKEND_HOST}/api/rooms/join/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify({ room, password }),
-  })
-    .then(response => {
-      if (response.status !== 201) throw new Error(response.status);
-      return response.json();
-    })
-    .then(data => dispatch({ type: ON_ROOM_CREATED, payload: { room: data } }))
-    .catch(error => dispatch({ type: ON_ROOM_CREATE_FAIL }));
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    const res = await axios.post('/api/rooms/join/', data, config);
+    dispatch({ type: ON_ROOM_CREATED, payload: { room: res.data } });
+  } catch (error) {
+    dispatch({ type: ON_ROOM_CREATE_FAIL });
+  }
 }
 
-export const onRoomDelete = id => dispatch => {
-  fetch(`${BACKEND_HOST}/api/rooms/${id}/`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify({ soft_delete: new Date() }),
-  })
-    .then(response => {
-      if (response.status !== 200) throw new Error(response.status);
-      return response.json();
-    })
-    .then(data => dispatch({ type: ON_ROOM_DELETED, payload: { id } }))
-    .catch(error => console.error(error));
+export const onRoomDelete = id => async dispatch => {
+  const data = { soft_delete: new Date() };
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    await axios.patch(`/api/rooms/${id}/`, data, config);
+    dispatch({ type: ON_ROOM_DELETED, payload: { id } });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-export const onRoomLeave = id => dispatch => {
-  fetch(`${BACKEND_HOST}/api/rooms/leave/${id}/`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `JWT ${localStorage.getItem('token')}`
-    },
-    body: JSON.stringify({ soft_delete: new Date() }),
-  })
-    .then(response => {
-      if (response.status !== 200) throw new Error(response.status);
-      return response.json();
-    })
-    .then(data => dispatch({ type: ON_ROOM_DELETED, payload: { id } }))
-    .catch(error => console.error(error));
+export const onRoomLeave = id => async dispatch => {
+  const data = { soft_delete: new Date() };
+  const config = { headers: { 'Content-Type': 'application/json' } };
+
+  try {
+    await axios.patch(`/api/rooms/leave/${id}/`, data, config);
+    dispatch({ type: ON_ROOM_DELETED, payload: { id } });
+  } catch (error) {
+    console.error(error);
+  }
 }
