@@ -1,54 +1,41 @@
 import React, { useState } from 'react';
-import { Row, Col, PageHeader } from 'antd';
+import PropTypes from 'prop-types';
+import { Row, Col } from 'antd';
 import { connect } from 'react-redux';
 import Rooms from './Rooms';
 import Chat from './Chat';
-import MessageInput from './MessageInput';
 import EmptyScreen from './EmptyScreen';
-import { onRoomMessagesRead, onMessagesValueChange } from '../actions';
+import RoomsListHeader from './Header';
+import { onMessagesValueChange } from '../actions';
 
 const MainScreen = props => {
   const [room, setRoom] = useState(null);
-  const [roomSocket, setRoomSocket] = useState(null);
+
+  const { windowHeight, onMessagesValueChange } = props;
 
   const onRoomSelect = room => {
-    props.onMessagesValueChange({ messages: [] });
+    onMessagesValueChange({ messages: [] });
     setRoom(room);
-
-    roomSocket && roomSocket.close();
-    setRoomSocket(props.onRoomMessagesRead(room.id));
-  }
-
-  const onMessageSend = message => {
-    if (roomSocket) roomSocket.send(JSON.stringify({ command:'new_message', data: { text: message, author: props.username } }));
   }
 
   return (
-    <Row>
-      <Col span={7}>
-        <Rooms windowHeight={props.windowHeight} onRoomPress={onRoomSelect} />
-      </Col>
-      <Col span={17} style={{ paddingLeft: 15 }}>
-        {room ? (
-          <div>
-            <PageHeader
-              className="chat-header"
-              onBack={() => setRoom(null)}
-              title={room.label}
-              subTitle={`@${room.id}`}
-            />
-            <Chat windowHeight={props.windowHeight} />
-            <MessageInput onMessageSend={onMessageSend} />
-          </div>
-        ) : <EmptyScreen />}
-      </Col>
-    </Row>
+    <React.Fragment>
+      <RoomsListHeader />
+      <Row>
+        <Col span={7}>
+          <Rooms windowHeight={windowHeight} onRoomPress={onRoomSelect} />
+        </Col>
+        <Col span={17} style={{ paddingLeft: 15 }}>
+          {room ? <Chat room={room} windowHeight={windowHeight} onBack={() => setRoom(null)} /> : <EmptyScreen description="No room selected" />}
+        </Col>
+      </Row>
+    </React.Fragment>
   )
 }
 
-const mapStateToProps = state => {
-  const { username } = state.user;
-  return { username };
+MainScreen.propTypes = {
+  windowHeight: PropTypes.number,
+  onMessagesValueChange: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps, { onRoomMessagesRead, onMessagesValueChange })(MainScreen);
+export default connect(null, { onMessagesValueChange })(MainScreen);

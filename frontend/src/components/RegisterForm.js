@@ -27,7 +27,7 @@ const RegisterForm = props => {
         placeholder="username"
         name="username"
         value={username}
-        onChange={e => onValueChange(e)}
+        onChange={onValueChange}
         prefix={<UserOutlined />}
       />
       <br />
@@ -36,7 +36,7 @@ const RegisterForm = props => {
         placeholder="password"
         name="password"
         value={password}
-        onChange={e => onValueChange(e)}
+        onChange={onValueChange}
         prefix={<KeyOutlined />}
       />
       <br />
@@ -45,7 +45,7 @@ const RegisterForm = props => {
         placeholder="confirm password"
         name="confirmPassword"
         value={confirmPassword}
-        onChange={e => onValueChange(e)}
+        onChange={onValueChange}
         prefix={<KeyOutlined />}
       />
       <br />

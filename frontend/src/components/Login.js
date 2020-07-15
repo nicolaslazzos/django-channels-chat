@@ -6,8 +6,6 @@ import RegisterForm from './RegisterForm';
 const Login = () => {
   const [selectedTab, setSelectedTab] = useState('login');
 
-  const onTabChange = tab => setSelectedTab(tab);
-
   const tabsList = [{ key: 'login', tab: 'Log In', }, { key: 'signup', tab: 'Sign Up', }];
   const tabs = { login: <LoginForm />, signup: <RegisterForm /> };
 
@@ -18,7 +16,7 @@ const Login = () => {
         tabList={tabsList}
         style={{ width: '40%' }}
         activeTabKey={selectedTab}
-        onTabChange={onTabChange}
+        onTabChange={setSelectedTab}
       >
         {tabs[selectedTab]}
       </Card>

@@ -11,10 +11,6 @@ import {
 
 const INITIAL_STATE = {
   rooms: [],
-  id: '',
-  label: '',
-  password: '',
-  confirmPassword: '',
   loading: false,
   error: '',
   newRoomVisible: false,

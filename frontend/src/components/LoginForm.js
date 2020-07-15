@@ -21,7 +21,7 @@ const LoginScreen = props => {
         placeholder="username"
         name="username"
         value={username}
-        onChange={e => onValueChange(e)}
+        onChange={onValueChange}
         prefix={<UserOutlined />}
       />
       <br />
@@ -30,7 +30,7 @@ const LoginScreen = props => {
         placeholder="password"
         name="password"
         value={password}
-        onChange={e => onValueChange(e)}
+        onChange={onValueChange}
         prefix={<KeyOutlined />}
       />
       <br />

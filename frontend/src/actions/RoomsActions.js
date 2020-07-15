@@ -1,4 +1,3 @@
-import { BACKEND_HOST } from '../environment';
 import axios from 'axios';
 import {
   ON_ROOMS_VALUE_CHANGE,

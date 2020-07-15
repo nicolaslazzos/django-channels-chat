@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { onRoomDelete, onRoomLeave } from '../actions';
 
 const RoomItem = props => {
-  const { room, username, onRoomDelete, onRoomLeave, onRoomPress } = props;
+  const { room, username, onRoomDelete, onRoomLeave, onClick } = props;
 
   const actions = {
     delete: <a key="room-delete" onClick={() => onRoomDelete(room.id)}>delete</a>,
@@ -14,7 +14,7 @@ const RoomItem = props => {
 
   return (
     <List.Item actions={[room.owner === username ? actions.delete : actions.leave]}>
-      <a onClick={() => onRoomPress(room)}>
+      <a onClick={onClick}>
         <List.Item.Meta
           title={room.label}
           description={`@${room.id}`}
@@ -30,7 +30,7 @@ RoomItem.propTypes = {
   room: PropTypes.object.isRequired,
   onRoomDelete: PropTypes.func.isRequired,
   onRoomLeave: PropTypes.func.isRequired,
-  onRoomPress: PropTypes.func
+  onClick: PropTypes.func
 }
 
 const mapStateToProps = state => {
