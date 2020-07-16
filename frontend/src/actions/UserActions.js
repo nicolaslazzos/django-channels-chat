@@ -25,7 +25,7 @@ export const onUserLogin = data => async dispatch => {
     const res = await axios.post('/token-auth/', data, config);
     dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { token: res.data.token, username: res.data.user.username } });
   } catch (error) {
-    dispatch({ type: ON_USER_AUTH_FAIL });
+    dispatch({ type: ON_USER_AUTH_FAIL, payload: error.response ? error.response.data : {} });
   }
 }
 
@@ -37,9 +37,10 @@ export const onUserCreate = data => async dispatch => {
 
   try {
     const res = await axios.post('/api/users/', data, config);
-    dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { token: res.data.token, username: res.data.user.username } });
+    console.log(res.data)
+    dispatch({ type: ON_USER_AUTH_SUCCESS, payload: { token: res.data.token, username: res.data.username } });
   } catch (error) {
-    dispatch({ type: ON_USER_AUTH_FAIL });
+    dispatch({ type: ON_USER_AUTH_FAIL, payload: error.response ? error.response.data : {} });
   }
 }
 

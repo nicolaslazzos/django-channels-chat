@@ -33,7 +33,7 @@ export const onRoomCreate = data => async dispatch => {
     const res = await axios.post('/api/rooms/', data, config);
     dispatch({ type: ON_ROOM_CREATED, payload: { room: res.data } });
   } catch (error) {
-    dispatch({ type: ON_ROOM_CREATE_FAIL });
+    dispatch({ type: ON_ROOM_CREATE_FAIL, payload: error.response ? error.response.data : {} });
   }
 }
 
@@ -47,7 +47,7 @@ export const onRoomJoin = data => async dispatch => {
     const res = await axios.post('/api/rooms/join/', data, config);
     dispatch({ type: ON_ROOM_CREATED, payload: { room: res.data } });
   } catch (error) {
-    dispatch({ type: ON_ROOM_CREATE_FAIL });
+    dispatch({ type: ON_ROOM_CREATE_FAIL, payload: error.response ? error.response.data : {} });
   }
 }
 

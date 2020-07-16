@@ -59,12 +59,18 @@ class RoomUserCreateAPIView(generics.CreateAPIView):
         room_id = request.data['room']
         password = request.data['password']
 
-        room = Room.objects.get(id=room_id)
+        room = Room.objects.filter(id=room_id).first()
         user = self.request.user
+
+        if (user.username == room.owner.username):
+            return Response({"non_field_errors": ['You can not join a room you own.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not room or not room.check_password(password):
+            return Response({"non_field_errors": ['Unable to join room with provided credentials.']}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.serializer_class(data={ 'room': room.id, 'user': user.id })
 
-        if serializer.is_valid() and room.check_password(password):
+        if serializer.is_valid():
             serializer.save()
             room_serializer = RoomSerializer(room)
 

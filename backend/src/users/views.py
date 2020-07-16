@@ -18,7 +18,7 @@ class UserRetrieveAPIView(generics.RetrieveAPIView):
 
 class UserCreateAPIView(generics.CreateAPIView):
     serializer_class = UserSerializerWithToken
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
         return User.objects.all()

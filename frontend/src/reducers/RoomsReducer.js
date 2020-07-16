@@ -12,7 +12,7 @@ import {
 const INITIAL_STATE = {
   rooms: [],
   loading: false,
-  error: '',
+  error: {},
   newRoomVisible: false,
 };
 
@@ -21,17 +21,17 @@ export default (state = INITIAL_STATE, action) => {
     case ON_ROOMS_VALUE_CHANGE:
       return { ...state, ...action.payload };
     case ON_ROOM_READING:
-      return { ...state, loading: true, error: '' };
+      return { ...state, loading: true, error: {} };
     case ON_ROOM_READ:
-      return { ...state, ...action.payload, loading: false, error: '' };
+      return { ...state, ...action.payload, loading: false, error: {} };
     case ON_ROOM_READ_FAIL:
       return { ...state, loading: false };
     case ON_ROOM_CREATING:
-      return { ...state, loading: true, error: '' };
+      return { ...state, loading: true, error: {} };
     case ON_ROOM_CREATED:
       return { ...state, loading: false, newRoomVisible: false, rooms: [...state.rooms, action.payload.room] };
     case ON_ROOM_CREATE_FAIL:
-      return { ...state, loading: false };
+      return { ...state, loading: false, error: action.payload };
     case ON_ROOM_DELETED:
       return { ...state, rooms: state.rooms.filter(room => room.id !== action.payload.id) };
     default:

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Button, Tooltip, Input } from 'antd';
+import { Button, Tooltip, Input, Alert } from 'antd';
 import { UserOutlined, KeyOutlined, HomeOutlined } from '@ant-design/icons';
 import { onRoomCreate } from '../actions';
 
 const CreateRoomForm = props => {
+  const [passwordError, setPasswordError] = useState('')
   const [formData, setFormData] = useState({
     id: '',
     label: '',
@@ -14,15 +15,17 @@ const CreateRoomForm = props => {
   });
 
   const { id, label, password, confirmPassword } = formData;
-  const { loading, onRoomCreate } = props;
+  const { rooms: { loading, error }, onRoomCreate } = props;
 
   const onValueChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onCreateRoomClick = () => {
+    setPasswordError('')
+
     if (password === confirmPassword) {
       onRoomCreate({ id, label, password });
     } else {
-      alert('The passowrds do not match');
+      setPasswordError('The passowrds do not match.');
     }
   }
 
@@ -37,6 +40,9 @@ const CreateRoomForm = props => {
       />
       <br />
       <br />
+      {error.id && error.id.length && (
+        <div><Alert message={error.id[0]} type="error" /><br /></div>
+      )}
       <Input
         placeholder="room label"
         name="label"
@@ -46,6 +52,9 @@ const CreateRoomForm = props => {
       />
       <br />
       <br />
+      {error.label && error.label.length && (
+        <div><Alert message={error.label[0]} type="error" /><br /></div>
+      )}
       <Input.Password
         placeholder="password"
         name="password"
@@ -55,15 +64,21 @@ const CreateRoomForm = props => {
       />
       <br />
       <br />
+      {error.password && error.password.length && (
+        <div><Alert message={error.password[0]} type="error" /><br /></div>
+      )}
       <Input.Password
         placeholder="confirm password"
-        name="confirmPassowrd"
+        name="confirmPassword"
         value={confirmPassword}
         onChange={onValueChange}
         prefix={<KeyOutlined />}
       />
       <br />
       <br />
+      {passwordError && (
+        <div><Alert message={passwordError} type="error" /><br /></div>
+      )}
       <Tooltip title='Create Room'>
         <Button type="primary" onClick={onCreateRoomClick} loading={loading}>Create Room</Button>
       </Tooltip>
@@ -72,12 +87,12 @@ const CreateRoomForm = props => {
 }
 
 CreateRoomForm.propTypes = {
-  loading: PropTypes.bool.isRequired,
+  rooms: PropTypes.object.isRequired,
   onRoomCreate: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => {
-  return { loading: state.rooms.loading };
+  return { rooms: state.rooms };
 }
 
 export default connect(mapStateToProps, { onRoomCreate })(CreateRoomForm);

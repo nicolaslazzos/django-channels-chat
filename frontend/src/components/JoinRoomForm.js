@@ -9,7 +9,7 @@ const JoinRoomForm = props => {
   const [formData, setFormData] = useState({ id: '', password: '' });
 
   const { id, password } = formData;
-  const { loading, error, onRoomJoin } = props;
+  const { rooms: { loading, error }, onRoomJoin } = props;
 
   const onValueChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -35,7 +35,9 @@ const JoinRoomForm = props => {
       />
       <br />
       <br />
-      {error && <div><Alert message={error} type="error" /><br /></div>}
+      {error.non_field_errors && error.non_field_errors.length && (
+        <div><Alert message={error.non_field_errors[0]} type="error" /><br /></div>
+      )}
       <Tooltip title='Join Room'>
         <Button type="primary" onClick={onJoinRoomClick} loading={loading}>Join Room</Button>
       </Tooltip>
@@ -44,14 +46,12 @@ const JoinRoomForm = props => {
 }
 
 JoinRoomForm.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  error: PropTypes.string,
+  rooms: PropTypes.object.isRequired,
   onRoomJoin: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => {
-  const { loading, error } = state.rooms;
-  return { loading, error };
+  return { rooms: state.rooms };
 }
 
 export default connect(mapStateToProps, { onRoomJoin })(JoinRoomForm);

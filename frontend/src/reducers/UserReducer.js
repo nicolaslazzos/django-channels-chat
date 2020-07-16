@@ -10,18 +10,18 @@ const INITIAL_STATE = {
   username: '',
   loggedIn: false,
   loading: false,
-  error: null,
+  error: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ON_USER_AUTH:
-      return { ...state, loading: true, error: null };
+      return { ...state, loading: true, error: {} };
     case ON_USER_AUTH_SUCCESS:
       action.payload.token && setAuthToken(action.payload.token);
       return { ...state, username: action.payload.username, loggedIn: true, loading: false };
     case ON_USER_AUTH_FAIL:
-      return { ...state, loading: false };
+      return { ...state, loading: false, error: action.payload };
     case ON_USER_LOGOUT:
       setAuthToken(null);
       return INITIAL_STATE;

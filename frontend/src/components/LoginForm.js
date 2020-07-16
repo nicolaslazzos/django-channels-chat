@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Input, Tooltip, Button } from 'antd';
+import { Input, Tooltip, Button, Alert } from 'antd';
 import { UserOutlined, KeyOutlined } from '@ant-design/icons';
 import { onUserLogin } from '../actions';
 
@@ -9,7 +9,7 @@ const LoginScreen = props => {
   const [formData, setFormData] = useState({ username: '', password: '' });
 
   const { username, password } = formData;
-  const { loading, onUserLogin } = props;
+  const { user: { loading, error }, onUserLogin } = props;
 
   const onValueChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -35,6 +35,9 @@ const LoginScreen = props => {
       />
       <br />
       <br />
+      {error.non_field_errors && error.non_field_errors.length && (
+        <div><Alert message={error.non_field_errors[0]} type="error" /><br /></div>
+      )}
       <Tooltip title='Log In'>
         <Button type="primary" onClick={onLoginClick} loading={loading}>Log In</Button>
       </Tooltip>
@@ -43,12 +46,12 @@ const LoginScreen = props => {
 }
 
 LoginScreen.propTypes = {
-  loading: PropTypes.bool.isRequired,
+  user: PropTypes.object.isRequired,
   onUserLogin: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => {
-  return { loading: state.user.loading };
+  return { user: state.user };
 }
 
 export default connect(mapStateToProps, { onUserLogin })(LoginScreen);
